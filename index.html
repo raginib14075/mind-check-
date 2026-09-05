@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MindCheck | Minimalist Wellbeing Check-in</title>
+    <!-- Google Fonts: Newsreader (Serif) & Plus Jakarta Sans (Sans-serif) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Stylesheet -->
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="site-wrapper">
+        <!-- HEADER / BRANDING -->
+        <header class="header-minimal">
+            <h1 class="brand-title">MindCheck</h1>
+            <p class="brand-description">
+                A gentle, conversational check-in built for a class project. It scores mood patterns the way a screening questionnaire would — it does not diagnose anything, and it isn't a substitute for talking to a real person.
+            </p>
+        </header>
+
+        <!-- MAIN APP CONTENT -->
+        <main class="app-main">
+            <!-- SETUP STAGE -->
+            <section class="stage-section active" id="stageSetup">
+                <div class="minimal-card setup-card">
+                    <form id="setupForm">
+                        <div class="field-group">
+                            <label for="userNameInput" class="field-label">Your name (optional)</label>
+                            <input type="text" id="userNameInput" class="minimal-input" placeholder="e.g. Alex or leave blank for Guest" autocomplete="off">
+                        </div>
+
+                        <div class="field-group">
+                            <label class="field-label">Choose assessment length</label>
+                            <div class="mode-options">
+                                <div class="mode-pill selected" data-mode="1" data-count="9">
+                                    <div class="mode-title">Standard</div>
+                                    <div class="mode-sub">9 Questions — PHQ-9</div>
+                                </div>
+                                <div class="mode-pill" data-mode="2" data-count="15">
+                                    <div class="mode-title">Extended</div>
+                                    <div class="mode-sub">15 Questions — Mood & Anxiety</div>
+                                </div>
+                                <div class="mode-pill" data-mode="3" data-count="20">
+                                    <div class="mode-title">Full</div>
+                                    <div class="mode-sub">20 Questions — Comprehensive</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="primary-pill-btn">
+                            Begin Check-In <i class="fa-solid fa-arrow-right"></i>
+                        </button>
+                    </form>
+                </div>
+            </section>
+
+            <!-- CHAT CHECK-IN STAGE -->
+            <section class="stage-section" id="stageChat">
+                <div class="minimal-card chat-wrapper">
+                    <div class="chat-header-bar">
+                        <span class="chat-phase-tag">Part 1: Reflection</span>
+                        <span class="chat-hint">Share a few words in response to each prompt</span>
+                    </div>
+
+                    <div class="chat-log" id="chatLog">
+                        <!-- Dynamic chat messages -->
+                    </div>
+
+                    <div class="chat-input-row" id="chatInputRow">
+                        <input type="text" id="chatTextInput" class="minimal-input" placeholder="Type your answer here..." autocomplete="off">
+                        <button type="button" id="chatSendBtn" class="action-pill-btn">
+                            Send
+                        </button>
+                    </div>
+
+                    <div class="chat-next-box hidden" id="chatNextBox">
+                        <p class="next-hint">Reflection complete. Ready for the check-in questions.</p>
+                        <button type="button" id="proceedToQuizBtn" class="primary-pill-btn">
+                            Continue to Questions <i class="fa-solid fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- QUESTIONNAIRE FEED STAGE (Matches User's Reference Screenshot) -->
+            <section class="stage-section" id="stageQuiz">
+                <div class="quiz-feed-header">
+                    <span class="feed-badge">Part 2: Questionnaire</span>
+                    <p class="feed-sub">Rate each item based on how you've felt over the <strong>last two weeks</strong>.</p>
+                </div>
+
+                <!-- Questions List Container -->
+                <div class="questions-feed" id="questionsFeed">
+                    <!-- Dynamic stacked question cards populated by JS -->
+                </div>
+
+                <div class="quiz-submit-bar" id="quizSubmitBar">
+                    <div class="quiz-progress-text" id="quizProgressText">0 of 9 answered</div>
+                    <button type="button" id="submitAssessmentBtn" class="primary-pill-btn" disabled>
+                        Complete Assessment <i class="fa-solid fa-check"></i>
+                    </button>
+                </div>
+            </section>
+
+            <!-- DIAGNOSTIC SUMMARY REPORT STAGE -->
+            <section class="stage-section" id="stageReport">
+                <div class="minimal-card report-wrapper">
+                    <div class="report-top">
+                        <span class="report-tag">Assessment Results</span>
+                        <h2 class="report-heading" id="reportUserNameTitle">Summary for Guest</h2>
+                    </div>
+
+                    <div class="report-summary-grid">
+                        <div class="summary-box">
+                            <span class="box-label">Total Score</span>
+                            <div class="box-score">
+                                <span class="score-num" id="reportScoreVal">0</span>
+                                <span class="score-denom" id="reportScoreMax">/ 27</span>
+                            </div>
+                        </div>
+
+                        <div class="summary-box">
+                            <span class="box-label">Severity Band</span>
+                            <div class="severity-tag" id="reportSeverityTag">Minimal</div>
+                        </div>
+                    </div>
+
+                    <div class="report-detail-box">
+                        <span class="box-label">Observed Symptom Pattern</span>
+                        <p class="pattern-text" id="reportPatternText">None detected</p>
+                    </div>
+
+                    <div class="report-detail-box">
+                        <span class="box-label">Category Breakdown</span>
+                        <div class="cat-list" id="catList">
+                            <!-- Category items -->
+                        </div>
+                    </div>
+
+                    <div class="report-detail-box" id="convoCuesBox">
+                        <span class="box-label">Conversational Cues Flagged</span>
+                        <div class="cues-tags" id="cuesTags">
+                            <!-- Keyword tags -->
+                        </div>
+                    </div>
+
+                    <div class="minimal-disclaimer">
+                        <p><strong>Note:</strong> This screening tool is for educational demonstration only. It does not provide medical diagnoses or replace professional mental health care.</p>
+                    </div>
+
+                    <div class="report-footer-actions">
+                        <button type="button" id="restartAppBtn" class="secondary-pill-btn">
+                            <i class="fa-solid fa-rotate-left"></i> Start New Check-In
+                        </button>
+                        <button type="button" class="secondary-pill-btn" onclick="window.print()">
+                            <i class="fa-solid fa-print"></i> Print Summary
+                        </button>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- CRISIS SAFETY MODAL -->
+    <div class="crisis-modal-overlay hidden" id="crisisModal">
+        <div class="minimal-card crisis-box">
+            <h3>Immediate Support Available</h3>
+            <p>If you're feeling overwhelmed or having thoughts of self-harm, please know you are not alone and help is available 24/7:</p>
+            <ul class="helpline-bullets">
+                <td><strong>US & Canada:</strong> Call or text 988</td>
+                <td><strong>UK:</strong> Call 111 or Samaritans 116 123</td>
+                <td><strong>India:</strong> Call 9152987821 or 14416</td>
+                <td><strong>International:</strong> <a href="https://findahelpline.com" target="_blank">findahelpline.com</a></td>
+            </ul>
+            <button type="button" class="primary-pill-btn" onclick="document.getElementById('crisisModal').classList.add('hidden')">
+                Understand & Close
+            </button>
+        </div>
+    </div>
+
+    <script src="/static/app.js"></script>
+</body>
+</html>
